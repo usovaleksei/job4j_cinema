@@ -10,7 +10,15 @@ import java.util.logging.Filter;
 public class PsqlMain {
 
     public static void main(String[] args) {
-        Store store = PsqlStore.instOf();
+
+        Store stubStore = StubStore.getInstance();
+        User user = new User("Alex", "ya", "+79107777700");
+        User userOne = new User("Sergey", "mail", "+79268888888");
+        stubStore.saveUser(user);
+        stubStore.saveUser(userOne);
+        System.out.println(stubStore.findUserByEmail("mail"));
+
+        //Store store = PsqlStore.instOf();
         /*Ticket ticket = new Ticket(1, 2, 2, 9);
         Ticket ticketOne = new Ticket(1, 2, 3, 4);
         User user = new User("Alex", "ya", "+79107777700");
@@ -19,10 +27,10 @@ public class PsqlMain {
         store.saveUser(userOne);
         store.saveTicket(ticket);
         store.saveTicket(ticketOne);*/
-        Collection<Ticket> ticketList = store.findAllTickets(3);
+       /* Collection<Ticket> ticketList = store.findAllTickets(3);
         for (Ticket ticket1 : ticketList) {
             System.out.println(ticket1);
-        }
+        }*/
        /* System.out.println(store.findUserByEmail("mail"));
         System.out.println(store.findUserByPhone("+79107777700"));
         Collection<Film> filmsList = store.findAllFilms();

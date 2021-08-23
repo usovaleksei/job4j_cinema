@@ -16,5 +16,5 @@ create table if not exists ticket (
 
 create table if not exists film (
     id serial primary key,
-    filmName textarea
+    filmName text
 );

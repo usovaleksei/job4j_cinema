@@ -24,10 +24,10 @@ function validate() {
         alert("Введите номер телефона");
         rsl = false;
     }
-    if ($('#email').val() === "") {
+    /*if ($('#email').val() === "") {
         alert("Введите email");
         rsl = false;
-    }
+    }*/
     return rsl;
 }
 
@@ -40,7 +40,7 @@ function pay() {
             "row": $("#rowId").val(),
             "cell": $("#cellId").val(),
             "username": $("#username").val(),
-            "email": $("#email").val(),
+            //"email": $("#email").val(),
             "phone": $("#phone").val()
         },
         success: function (response) {

@@ -58,10 +58,10 @@
                 <label for="phone">Номер телефона</label>
                 <input type="text" class="form-control" id="phone" placeholder="Номер телефона">
             </div>
-            <div class="form-group">
+           <%-- <div class="form-group">
                 <label for="email">Электронная почта</label>
                 <input type="text" class="form-control" id="email" placeholder="Электронная почта">
-            </div>
+            </div>--%>
             <button type="button" class="btn btn-success" onclick="btnClick();">Оплатить</button>
         </form>
     </div>

@@ -3,6 +3,7 @@ package ru.job4j.cinema.store;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.cinema.exceptions.NoSeatException;
 import ru.job4j.cinema.model.Film;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.model.User;
@@ -27,7 +28,9 @@ public class PsqlStore implements Store {
 
     private PsqlStore() {
         Properties cfg = new Properties();
-        try (BufferedReader io = new BufferedReader(new FileReader("db_cinema.properties"))) {
+        try (BufferedReader io = new BufferedReader(
+                new FileReader("db_cinema.properties"))
+        ) {
             cfg.load(io);
         } catch (IOException e) {
             LOG.error("Error reading database settings", e);
@@ -56,8 +59,11 @@ public class PsqlStore implements Store {
 
     @Override
     public Ticket saveTicket(Ticket ticket) {
+        String query =
+                "insert into ticket(session_id, row, cell, account_id) values(?, ?, ?, ?)";
         try (Connection cn = this.pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("insert into ticket(session_id, row, cell, account_id) values(?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = cn.prepareStatement(query,
+                     PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, ticket.getSessionId());
             ps.setInt(2, ticket.getRow());
             ps.setInt(3, ticket.getCell());
@@ -70,15 +76,18 @@ public class PsqlStore implements Store {
             }
         } catch (SQLException e) {
             LOG.error("Request execution error", e);
+            throw new NoSeatException("Выбранные места заняты");
         }
         return ticket;
     }
 
     @Override
     public Collection<Ticket> findAllTickets(int sessionId) {
+        String query =
+                "select * from ticket where session_id = (?)";
         List<Ticket> ticketList = new ArrayList<>();
         try (Connection cn = this.pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("select * from ticket where session_id = (?)")) {
+             PreparedStatement ps = cn.prepareStatement(query)) {
             ps.setInt(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -97,10 +106,12 @@ public class PsqlStore implements Store {
 
     @Override
     public User saveUser(User user) {
+        String query =
+                "insert into account(username, phone) values(?, ?)";
         try (Connection cn = this.pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("insert into account(username, email, phone) values(?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = cn.prepareStatement(query,
+                     PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getUsername());
-            ps.setString(2, user.getEmail());
             ps.setString(3, user.getPhone());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
@@ -117,8 +128,10 @@ public class PsqlStore implements Store {
     @Override
     public User findUserByEmail(String email) {
         User user = null;
+        String query =
+                "select id, username, email, phone from account where email = (?)";
         try (Connection cn = this.pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("select id, username, email, phone from account where email = (?)")) {
+             PreparedStatement ps = cn.prepareStatement(query)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -137,8 +150,10 @@ public class PsqlStore implements Store {
     @Override
     public User findUserByPhone(String phone) {
         User user = null;
+        String query =
+                "select id, username, phone from account where phone = (?)";
         try (Connection cn = this.pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("select id, username, email, phone from account where phone = (?)")) {
+             PreparedStatement ps = cn.prepareStatement(query)) {
             ps.setString(1, phone);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -157,8 +172,9 @@ public class PsqlStore implements Store {
     @Override
     public Collection<Film> findAllFilms() {
         List<Film> filmList = new ArrayList<>();
+        String query = "select * from film";
         try (Connection cn = this.pool.getConnection();
-            PreparedStatement ps = cn.prepareStatement("select * from film")) {
+             PreparedStatement ps = cn.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     filmList.add(new Film(rs.getInt("id"),
@@ -174,8 +190,10 @@ public class PsqlStore implements Store {
     @Override
     public Film findFilmById(int id) {
         Film film = null;
+        String query =
+                "select id, name from film where id = (?)";
         try (Connection cn = this.pool.getConnection();
-            PreparedStatement ps = cn.prepareStatement("select id, name from film where id = (?)")) {
+             PreparedStatement ps = cn.prepareStatement(query)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

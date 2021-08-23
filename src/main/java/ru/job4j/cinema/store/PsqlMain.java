@@ -11,12 +11,12 @@ public class PsqlMain {
 
     public static void main(String[] args) {
 
-        Store stubStore = StubStore.getInstance();
+        /*Store stubStore = StubStore.getInstance();
         User user = new User("Alex", "ya", "+79107777700");
         User userOne = new User("Sergey", "mail", "+79268888888");
         stubStore.saveUser(user);
         stubStore.saveUser(userOne);
-        System.out.println(stubStore.findUserByEmail("mail"));
+        System.out.println(stubStore.findUserByEmail("mail"));*/
 
         //Store store = PsqlStore.instOf();
         /*Ticket ticket = new Ticket(1, 2, 2, 9);

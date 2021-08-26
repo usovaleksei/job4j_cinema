@@ -42,12 +42,20 @@ function pay() {
             "username": $("#username").val(),
             //"email": $("#email").val(),
             "phone": $("#phone").val()
-        },
-        success: function (response) {
-            alert(response);
-            window.location.href = 'index.html'
         }
-    })
+    }).done(function () {
+        alert("Вы успешно забронировали места на фильм");
+        window.location.href = 'index.html'
+    }).fail(function (jqXHR) {
+        const stat = jqXHR.status;
+        console.log(stat);
+        if (stat === 409) {
+            alert("Места заняты, выберите, пожалуйста, другие");
+        } else {
+            alert("Что-то пошло не так... Попробойте заново")
+        }
+        window.location.href = 'index.html'
+    });
 }
 
 function btnClick() {

@@ -76,7 +76,7 @@ public class PsqlStore implements Store {
             }
         } catch (SQLException e) {
             LOG.error("Request execution error", e);
-            throw new NoSeatException("Выбранные места заняты");
+            throw new NoSeatException();
         }
         return ticket;
     }
@@ -112,33 +112,11 @@ public class PsqlStore implements Store {
              PreparedStatement ps = cn.prepareStatement(query,
                      PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getUsername());
-            ps.setString(3, user.getPhone());
+            ps.setString(2, user.getPhone());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
                     user.setId(id.getInt(1));
-                }
-            }
-        } catch (SQLException e) {
-            LOG.error("Request execution error", e);
-        }
-        return user;
-    }
-
-    @Override
-    public User findUserByEmail(String email) {
-        User user = null;
-        String query =
-                "select id, username, email, phone from account where email = (?)";
-        try (Connection cn = this.pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement(query)) {
-            ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    user = new User(rs.getInt("id"),
-                            rs.getString("username"),
-                            rs.getString("email"),
-                            rs.getString("phone"));
                 }
             }
         } catch (SQLException e) {

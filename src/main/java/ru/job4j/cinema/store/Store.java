@@ -14,8 +14,6 @@ public interface Store {
 
     User saveUser(User user);
 
-    User findUserByEmail(String email);
-
     User findUserByPhone(String phone);
 
     Collection<Film> findAllFilms();

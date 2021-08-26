@@ -1,5 +1,6 @@
 package ru.job4j.cinema.servlet;
 
+import ru.job4j.cinema.exceptions.NoSeatException;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.model.User;
 import ru.job4j.cinema.store.PsqlStore;
@@ -10,13 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
-public class PayServlet extends HttpServlet {
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
-    private final Store store = PsqlStore.instOf();
+public class PayServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setContentType("text/plain");
+        Store store = PsqlStore.instOf();
+        resp.setContentType("text/html");
         resp.setCharacterEncoding("UTF-8");
 
         String phone = req.getParameter("phone");
@@ -26,10 +28,14 @@ public class PayServlet extends HttpServlet {
         int cell = Integer.parseInt(req.getParameter("cell"));
 
         int userId = Optional
-                .ofNullable(this.store.findUserByPhone(phone))
-                .orElse(this.store.saveUser(new User(username, phone)))
+                .ofNullable(store.findUserByPhone(phone))
+                .orElse(store.saveUser(new User(username, phone)))
                 .getId();
 
-        this.store.saveTicket(new Ticket(sessionId, row, cell, userId));
+        try {
+            store.saveTicket(new Ticket(sessionId, row, cell, userId));
+        } catch (NoSeatException e) {
+            resp.setStatus(SC_CONFLICT);
+        }
     }
 }

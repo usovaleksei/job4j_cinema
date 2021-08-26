@@ -49,11 +49,6 @@ public class StubStore implements Store {
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        return this.users.get(email);
-    }
-
-    @Override
     public User findUserByPhone(String phone) {
         return this.users.get(phone);
     }

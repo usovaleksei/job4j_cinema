@@ -1,22 +1,21 @@
-$(document).ready(function () {
-    $("#session").change(function () {
-        let sessionId = $("#session").val();
+let sessionId;
 
-        $('label').each(function () {
-            $(this).html('Место свободно').css('color', 'green');
-        })
+function filmSelected() {
+    sessionId = $("#session").val();
 
-        const radio = document.getElementsByName("place");
-        for (let i = 0; i < radio.length; i++) {
-            radio[i].removeAttribute('disabled');
-        }
+    $('label').each(function () {
+        $(this).html('Место свободно').css('color', 'green');
+    })
 
-        loadTickets(sessionId);
-    });
-});
+    const radio = document.getElementsByName("place");
+    for (let i = 0; i < radio.length; i++) {
+        radio[i].removeAttribute('disabled');
+    }
+
+    window.timerId = window.setInterval(loadTickets, 1000);
+}
 
 function start() {
-    window.timerId = window.setInterval(loadTickets, 1000);
     loadFilms();
 }
 
@@ -34,7 +33,7 @@ function loadFilms() {
     });
 }
 
-function loadTickets(sessionId) {
+function loadTickets() {
 
 
     $.ajax({
